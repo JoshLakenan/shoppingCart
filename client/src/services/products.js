@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Function to fetch all products
-export const fetchProducts = async () => {
+export const getProducts = async () => {
   const response = await axios.get("/api/products");
   return response.data;
 };
@@ -21,11 +21,5 @@ export const updateProduct = async (productId, productData) => {
 // Function to delete a product
 export const deleteProduct = async (productId) => {
   const response = await axios.delete(`/api/products/${productId}`);
-  return response.data;
-};
-
-// Function to add a product to the cart
-export const addToCart = async (productId) => {
-  const response = await axios.post("/api/add-to-cart", { productId });
   return response.data;
 };

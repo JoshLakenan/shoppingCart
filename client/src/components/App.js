@@ -2,24 +2,32 @@ import Header from "./Header";
 import Main from "./Main";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { addToCart } from "../services/products";
+
+import {
+  getProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "../services/products";
+
+import { getCartItems, addToCart, checkout } from "../services/cartItems";
 
 const App = () => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
 
+  // Get Products
   useEffect(() => {
     const productSource = axios.CancelToken.source();
     const fetchProducts = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5001/api/products", {
-          cancelToken: productSource.token,
-        });
+        const data = await getProducts();
         setProducts(data);
       } catch (e) {
         console.error(e);
       }
     };
+
     fetchProducts();
 
     return () => {
@@ -27,20 +35,19 @@ const App = () => {
     };
   }, [products.length]);
 
+  // Get Cart Items
   useEffect(() => {
     const cartSource = axios.CancelToken.source();
-    const fetchCart = async () => {
+    const fetchCartItems = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5001/api/cart", {
-          cancelToken: cartSource.token,
-        });
+        const data = await getCartItems();
         setCartItems(data);
       } catch (e) {
         console.error(e);
       }
     };
 
-    fetchCart();
+    fetchCartItems();
 
     return () => {
       cartSource.cancel("Canceling for some reason");
@@ -49,9 +56,8 @@ const App = () => {
 
   const handleAddProduct = async (newProduct, callback) => {
     try {
-      const { data } = await axios.post("http://localhost:5001/api/products", {
-        ...newProduct,
-      });
+      const data = await createProduct(newProduct);
+
       setProducts(products.concat(data));
 
       if (callback) {
@@ -64,9 +70,11 @@ const App = () => {
 
   const handleAddToCart = async (productId) => {
     try {
-      const data = addToCart(productId);
+      const data = await addToCart(productId);
 
       setCartItems(cartItems.concat(data));
+
+      // update products quantity if adding to cart was successful - Pessemistic update
       setProducts(
         products.map((product) => {
           if (product._id === productId) {
@@ -82,20 +90,36 @@ const App = () => {
 
   const handleCheckout = async () => {
     try {
-      await axios.post("http://localhost:5001/api/checkout");
+      await checkout();
       setCartItems([]);
     } catch (e) {
       console.error(e);
     }
   };
 
-  const handleEdit = async () => {};
+  const handleEdit = async (productId, productData, callback) => {
+    try {
+      await updateProduct(productId, productData);
+    } catch (e) {
+      console.error(e);
+    }
+    if (callback) {
+      callback();
+    }
+
+    setProducts(
+      products.map((product) => {
+        if (product._id === productId) {
+          return { ...product, ...productData };
+        }
+        return product;
+      }),
+    );
+  };
 
   const handleDelete = async (productId) => {
     try {
-      const { data } = await axios.delete(
-        `http://localhost:5001/api/products/${productId}`,
-      );
+      await deleteProduct(productId);
       setProducts(products.filter((product) => product._id !== productId));
     } catch (e) {
       console.error(e);

@@ -1,3 +1,6 @@
+import { useState } from "react";
+import EditProductForm from "./EditProductForm";
+
 const Product = ({
   id,
   title,
@@ -7,12 +10,14 @@ const Product = ({
   onDelete,
   onEdit,
 }) => {
-  const handleAddToCart = async () => {
-    await onAddToCart(id);
+  const [formVisible, setFormVisible] = useState(false);
+
+  const handleFormVisibleClick = () => {
+    setFormVisible((prev) => !prev);
   };
 
-  const handleEdit = async () => {
-    console.log("Edit clicked");
+  const handleAddToCart = async () => {
+    await onAddToCart(id);
   };
 
   const handleDelete = async () => {
@@ -29,9 +34,19 @@ const Product = ({
           <button className="add-to-cart" onClick={handleAddToCart}>
             Add to Cart
           </button>
-          <button className="edit" onClick={handleEdit}>
+          <button className="edit" onClick={handleFormVisibleClick}>
             Edit
           </button>
+          {formVisible && (
+            <EditProductForm
+              id={id}
+              currentTitle={title}
+              currentPrice={price}
+              currentQuantity={quantity}
+              onEdit={onEdit}
+              closeForm={handleFormVisibleClick}
+            />
+          )}
         </div>
         <button className="delete-button" onClick={handleDelete}>
           <span>X</span>

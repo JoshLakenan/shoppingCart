@@ -1,14 +1,46 @@
-const EditProductForm = ({ name, price, qty }) => {
+import React, { useState } from "react";
+
+const EditProductForm = ({
+  id,
+  currentTitle,
+  currentPrice,
+  currentQuantity,
+  onEdit,
+  closeForm,
+}) => {
+  const [title, setTitle] = useState(currentTitle);
+  const [price, setPrice] = useState(currentPrice);
+  const [quantity, setQty] = useState(currentQuantity);
+
+  const resetForm = () => {
+    setTitle("");
+    setPrice("");
+    setQty("");
+
+    closeForm();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const editedProduct = { title, price, quantity };
+    await onEdit(id, editedProduct, resetForm);
+
+    console.log(
+      "Form submitted with data:" + title + " " + price + " " + quantity,
+    );
+  };
   return (
     <div className="edit-form">
       <h3>Edit Product</h3>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label htmlFor="product-name">Product Name</label>
           <input
+            onChange={(e) => setTitle(e.target.value)}
             type="text"
             id="product-name"
-            value={name}
+            value={title}
             aria-label="Product Name"
           />
         </div>
@@ -16,6 +48,7 @@ const EditProductForm = ({ name, price, qty }) => {
         <div className="input-group">
           <label htmlFor="product-price">Price</label>
           <input
+            onChange={(e) => setPrice(e.target.value)}
             type="number"
             id="product-price"
             value={price}
@@ -26,16 +59,19 @@ const EditProductForm = ({ name, price, qty }) => {
         <div className="input-group">
           <label htmlFor="product-quantity">Quantity</label>
           <input
+            onChange={(e) => setQty(e.target.value)}
             type="number"
             id="product-quantity"
-            value={qty}
+            value={quantity}
             aria-label="Product Quantity"
           />
         </div>
 
         <div className="actions form-actions">
           <button type="submit">Update</button>
-          <button type="button">Cancel</button>
+          <button type="button" onClick={resetForm}>
+            Cancel
+          </button>
         </div>
       </form>
     </div>
