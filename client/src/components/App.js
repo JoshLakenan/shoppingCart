@@ -25,6 +25,7 @@ const App = () => {
         const data = await getProducts();
         setProducts(data);
       } catch (e) {
+        setError(true);
         console.error(e);
       }
     };
@@ -44,6 +45,7 @@ const App = () => {
         const data = await getCartItems();
         setCartItems(data);
       } catch (e) {
+        setError(true);
         console.error(e);
       }
     };
@@ -65,29 +67,29 @@ const App = () => {
         callback();
       }
     } catch (e) {
+      setError(true);
       console.error(e);
     }
   };
 
-  const updateCartItems = (cartItems, productId, cartItemData) => {
-    if (cartItems.find((item) => item.productId === productId)) {
-      return cartItems.map((item) => {
-        if (item.productId === productId) {
-          return { ...item, quantity: item.quantity + 1 };
-        }
-        return item;
-      });
-    }
-
-    return cartItems.concat(cartItemData);
-  };
-
   const handleAddToCart = async (productId) => {
+    const updateCartItems = (cartItems, productId, cartItemData) => {
+      if (cartItems.find((item) => item.productId === productId)) {
+        return cartItems.map((item) => {
+          if (item.productId === productId) {
+            return { ...item, quantity: item.quantity + 1 };
+          }
+          return item;
+        });
+      }
+
+      return cartItems.concat(cartItemData);
+    };
+
     try {
       const { item } = await addToCart(productId);
 
       const newCart = updateCartItems(cartItems, productId, item);
-
       setCartItems(newCart);
 
       // update products quantity if adding to cart was successful - Pessemistic update
@@ -100,6 +102,7 @@ const App = () => {
         }),
       );
     } catch (e) {
+      setError(true);
       console.error(e);
     }
   };
@@ -109,6 +112,7 @@ const App = () => {
       await checkout();
       setCartItems([]);
     } catch (e) {
+      setError(true);
       console.error(e);
     }
   };
@@ -117,6 +121,7 @@ const App = () => {
     try {
       await updateProduct(productId, productData);
     } catch (e) {
+      setError(true);
       console.error(e);
     }
     if (callback) {
@@ -138,9 +143,14 @@ const App = () => {
       await deleteProduct(productId);
       setProducts(products.filter((product) => product._id !== productId));
     } catch (e) {
+      setError(true);
       console.error(e);
     }
   };
+
+  if (error) {
+    return <div>Something went wrong</div>;
+  }
 
   return (
     <div id="app">
