@@ -15,6 +15,7 @@ import { getCartItems, addToCart, checkout } from "../services/cartItems";
 const App = () => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
+  const [error, setError] = useState(false);
 
   // Get Products
   useEffect(() => {
@@ -33,7 +34,7 @@ const App = () => {
     return () => {
       productSource.cancel("Canceling for some reason");
     };
-  }, [products.length]);
+  }, []);
 
   // Get Cart Items
   useEffect(() => {
@@ -52,7 +53,7 @@ const App = () => {
     return () => {
       cartSource.cancel("Canceling for some reason");
     };
-  }, [cartItems.length]);
+  }, []);
 
   const handleAddProduct = async (newProduct, callback) => {
     try {
@@ -68,11 +69,26 @@ const App = () => {
     }
   };
 
+  const updateCartItems = (cartItems, productId, cartItemData) => {
+    if (cartItems.find((item) => item.productId === productId)) {
+      return cartItems.map((item) => {
+        if (item.productId === productId) {
+          return { ...item, quantity: item.quantity + 1 };
+        }
+        return item;
+      });
+    }
+
+    return cartItems.concat(cartItemData);
+  };
+
   const handleAddToCart = async (productId) => {
     try {
-      const data = await addToCart(productId);
+      const { item } = await addToCart(productId);
 
-      setCartItems(cartItems.concat(data));
+      const newCart = updateCartItems(cartItems, productId, item);
+
+      setCartItems(newCart);
 
       // update products quantity if adding to cart was successful - Pessemistic update
       setProducts(

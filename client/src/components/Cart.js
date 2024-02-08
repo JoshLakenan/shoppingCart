@@ -5,9 +5,9 @@ const Cart = ({ cartItems, onCheckout }) => {
     return acc + item.price * item.quantity;
   }, 0);
 
-  const handleCheckout = async (e) => {
+  const handleCheckout = (e) => {
     e.preventDefault();
-    await onCheckout();
+    onCheckout();
   };
 
   return (
@@ -26,9 +26,9 @@ const Cart = ({ cartItems, onCheckout }) => {
               </tr>
             </thead>
             <tbody>
-              {cartItems.map((item, idx) => (
+              {cartItems.map((item) => (
                 <CartRow
-                  key={idx}
+                  key={item._id}
                   title={item.title}
                   quantity={item.quantity}
                   price={item.price}

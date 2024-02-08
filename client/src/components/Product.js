@@ -12,17 +12,11 @@ const Product = ({
 }) => {
   const [formVisible, setFormVisible] = useState(false);
 
-  const handleFormVisibleClick = () => {
-    setFormVisible((prev) => !prev);
-  };
+  const handleFormVisibleClick = () => setFormVisible((prev) => !prev);
 
-  const handleAddToCart = async () => {
-    await onAddToCart(id);
-  };
+  const handleAddToCart = () => onAddToCart(id);
 
-  const handleDelete = async () => {
-    await onDelete(id);
-  };
+  const handleDelete = () => onDelete(id);
 
   return (
     <li className="product">

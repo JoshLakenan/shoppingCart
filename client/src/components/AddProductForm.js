@@ -11,24 +11,18 @@ const AddProductForm = ({ onAddProduct }) => {
     setFormVisible((prev) => !prev);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const newProduct = { title, price, quantity };
-    await onAddProduct(newProduct, resetForm);
-
-    console.log(
-      "Form submitted with data:" + title + " " + price + " " + quantity,
-    );
+    onAddProduct(newProduct, resetForm);
   };
 
   const resetForm = () => {
     setTitle("");
     setPrice("");
     setQty("");
-
-    //close the form
-    setFormVisible(false);
+    setFormVisible((prev) => !prev);
   };
 
   return (
