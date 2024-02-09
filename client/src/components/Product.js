@@ -1,5 +1,6 @@
 import { useState } from "react";
 import EditProductForm from "./EditProductForm";
+import ProductDetails from "./ProductDetails";
 
 const Product = ({
   id,
@@ -21,11 +22,13 @@ const Product = ({
   return (
     <li className="product">
       <div className="product-details">
-        <h3>{title}</h3>
-        <p className="price">${price}</p>
-        <p className="quantity">{quantity} left in stock</p>
+        <ProductDetails title={title} price={price} quantity={quantity} />
         <div className="actions product-actions">
-          <button className="add-to-cart" onClick={handleAddToCart}>
+          <button
+            className="add-to-cart"
+            onClick={handleAddToCart}
+            disabled={quantity === 0}
+          >
             Add to Cart
           </button>
           <button className="edit" onClick={handleFormVisibleClick}>

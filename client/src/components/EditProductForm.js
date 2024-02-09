@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { validForm } from "../utils/validators";
 
 const EditProductForm = ({
   id,
@@ -23,13 +24,12 @@ const EditProductForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validForm(title, price, quantity)) return;
+
     const editedProduct = { title, price, quantity };
     await onEdit(id, editedProduct, resetForm);
-
-    console.log(
-      "Form submitted with data:" + title + " " + price + " " + quantity,
-    );
   };
+
   return (
     <div className="edit-form">
       <h3>Edit Product</h3>
@@ -49,7 +49,7 @@ const EditProductForm = ({
           <label htmlFor="product-price">Price</label>
           <input
             onChange={(e) => setPrice(e.target.value)}
-            type="number"
+            type="text"
             id="product-price"
             value={price}
             aria-label="Product Price"

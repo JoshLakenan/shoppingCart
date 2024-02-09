@@ -103,6 +103,7 @@ button {
   font-family: sans-serif;
   cursor: pointer;
   display: inline-block;
+  margin: 0 5px 0 0;
 }
 
 .checkout {
@@ -191,4 +192,21 @@ th {
 table td.total {
   text-align: right;
   padding-top: 20px;
+}
+
+.error {
+  border: 2px solid red;
+  padding: 10px;
+}
+
+.error h1 {
+  color: red;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.error p {
+  color: red;
+  font-size: 16px;
+  margin-bottom: 10px;
 }

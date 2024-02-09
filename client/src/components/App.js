@@ -8,15 +8,16 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-} from "../services/products";
+} from "../services/product";
 
-import { getCartItems, addToCart, checkout } from "../services/cartItems";
+import { getCartItems, addToCart, checkout } from "../services/cart";
 
 import {
   getNewCart,
   decrementProductQty,
   getNewProductDetails,
 } from "../utils/stateHelpers";
+import ErrorPage from "./ErrorPage";
 
 const App = () => {
   const [products, setProducts] = useState([]);
@@ -122,7 +123,7 @@ const App = () => {
     }
   };
 
-  if (error) return <div>Something went wrong</div>;
+  if (error) return <ErrorPage />;
 
   return (
     <div id="app">

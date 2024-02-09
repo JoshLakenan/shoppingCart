@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { validForm } from "../utils/validators";
 
 const AddProductForm = ({ onAddProduct }) => {
   const [formVisible, setFormVisible] = useState(false);
@@ -14,6 +15,8 @@ const AddProductForm = ({ onAddProduct }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!validForm(title, price, quantity)) return;
+
     const newProduct = { title, price, quantity };
     onAddProduct(newProduct, resetForm);
   };
@@ -27,12 +30,7 @@ const AddProductForm = ({ onAddProduct }) => {
 
   return (
     <div className="add-form">
-      <p>
-        <button onClick={handleFormVisibleClick} className="add-product-button">
-          Add a Product
-        </button>
-      </p>
-      {formVisible && (
+      {formVisible ? (
         <>
           <h3>Add Product</h3>
           <form>
@@ -50,7 +48,7 @@ const AddProductForm = ({ onAddProduct }) => {
               <label htmlFor="product-price">Price:</label>
               <input
                 onChange={(e) => setPrice(e.target.value)}
-                type="number"
+                type="text"
                 id="product-price"
                 name="product-price"
                 min="0"
@@ -79,6 +77,15 @@ const AddProductForm = ({ onAddProduct }) => {
             </div>
           </form>
         </>
+      ) : (
+        <p>
+          <button
+            onClick={handleFormVisibleClick}
+            className="add-product-button"
+          >
+            Add a Product
+          </button>
+        </p>
       )}
     </div>
   );
