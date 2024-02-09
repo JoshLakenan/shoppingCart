@@ -12,6 +12,12 @@ import {
 
 import { getCartItems, addToCart, checkout } from "../services/cartItems";
 
+import {
+  getNewCart,
+  decrementProductQty,
+  getNewProductDetails,
+} from "../utils/stateHelpers";
+
 const App = () => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
@@ -57,15 +63,13 @@ const App = () => {
     };
   }, []);
 
-  const handleAddProduct = async (newProduct, callback) => {
+  const handleNewProduct = async (newProduct, callback) => {
     try {
       const data = await createProduct(newProduct);
 
       setProducts(products.concat(data));
 
-      if (callback) {
-        callback();
-      }
+      if (callback) callback();
     } catch (e) {
       setError(true);
       console.error(e);
@@ -73,34 +77,13 @@ const App = () => {
   };
 
   const handleAddToCart = async (productId) => {
-    const updateCartItems = (cartItems, productId, cartItemData) => {
-      if (cartItems.find((item) => item.productId === productId)) {
-        return cartItems.map((item) => {
-          if (item.productId === productId) {
-            return { ...item, quantity: item.quantity + 1 };
-          }
-          return item;
-        });
-      }
-
-      return cartItems.concat(cartItemData);
-    };
-
     try {
       const { item } = await addToCart(productId);
 
-      const newCart = updateCartItems(cartItems, productId, item);
-      setCartItems(newCart);
+      setCartItems(getNewCart(cartItems, productId, item));
 
       // update products quantity if adding to cart was successful - Pessemistic update
-      setProducts(
-        products.map((product) => {
-          if (product._id === productId) {
-            if (product.quantity > 0) product.quantity -= 1;
-          }
-          return product;
-        }),
-      );
+      setProducts(decrementProductQty(products, productId));
     } catch (e) {
       setError(true);
       console.error(e);
@@ -117,28 +100,19 @@ const App = () => {
     }
   };
 
-  const handleEdit = async (productId, productData, callback) => {
+  const handleEditProduct = async (productId, productData, callback) => {
     try {
       await updateProduct(productId, productData);
     } catch (e) {
       setError(true);
       console.error(e);
     }
-    if (callback) {
-      callback();
-    }
+    if (callback) callback();
 
-    setProducts(
-      products.map((product) => {
-        if (product._id === productId) {
-          return { ...product, ...productData };
-        }
-        return product;
-      }),
-    );
+    setProducts(getNewProductDetails(products, productId, productData));
   };
 
-  const handleDelete = async (productId) => {
+  const handleDeleteProduct = async (productId) => {
     try {
       await deleteProduct(productId);
       setProducts(products.filter((product) => product._id !== productId));
@@ -148,19 +122,17 @@ const App = () => {
     }
   };
 
-  if (error) {
-    return <div>Something went wrong</div>;
-  }
+  if (error) return <div>Something went wrong</div>;
 
   return (
     <div id="app">
       <Header cartItems={cartItems} onCheckout={handleCheckout} />
       <Main
         products={products}
-        onAddProduct={handleAddProduct}
+        onAddProduct={handleNewProduct}
         onAddToCart={handleAddToCart}
-        onDelete={handleDelete}
-        onEdit={handleEdit}
+        onDelete={handleDeleteProduct}
+        onEdit={handleEditProduct}
       />
     </div>
   );
