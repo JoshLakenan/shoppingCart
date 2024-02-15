@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Function to add a product to the cart
 export const addToCart = async (productId) => {
-  const response = await axios.post("/api/add-to-cartss", { productId });
+  const response = await axios.post("/api/add-to-cart", { productId });
   return response.data;
 };
 
